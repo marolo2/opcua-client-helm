@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.namespace }} # data-client (opc i cloud), rabbitt-msg (dla kolejki), 
+  labels: # labels within metadata sets the labels for the Pods. The label app: mysql is used to match the selector defined in the Deployment.
+    app: {{ .Values.app.name }}-{{ .Values.app.function }}
+  name: {{ .Values.app.name }}-{{ .Values.app.function }}
+# ReplicaSet
+spec:
+  replicas: 1
+  selector: # selector specifies the label selector used to identify the Pods managed by this Deployment. The Pods should have the label opc-client-read
+    matchLabels:
+      app: {{ .Values.app.name }}-{{ .Values.app.function }}
+# Updating strategy
+  strategy: 
+    type: {{ .Values.deployment.updateStrategy }}
+    rollingUpdate:
+      maxUnavailable: 25% # at least 75% of the desired number of Pods are up
+      maxSurge: 25% #  at most 125% of the desired number of Pods are up
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}-{{ .Values.app.function }}
+      annotations:
+        checksum/opc-nodes: {{ include (print $.Template.BasePath "/opc-nodes-cm.yaml") . | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/opc-secret.yaml") . | sha256sum }}
+    spec:
+      containers:
+      - name: {{ .Values.app.name }}-{{ .Values.app.function }}
+        image: {{ .Values.deployment.image }}:{{ .Values.deployment.tag }}
+        imagePullPolicy: {{ .Values.deployment.pullPolicy }}
+# Pod resoruces
+        env:
+         - name: OPCHOST
+           value: {{ .Values.opc.opcHost }} # "opc.tcp://192.168.0.104" ; "opc.tcp://10.0.0.83"
+         - name: OPCPORT
+           value: {{ .Values.opc.opcPort | quote }}
+         - name: OPCSUBPERIOD
+           value: {{ .Values.opc.opcSubperiod | quote }}
+         - name: RABBITMQHOST
+           value: {{ .Values.rabbitmq.rabbitmqHost }}
+         - name: RABBITMQPORT
+           value: {{ .Values.rabbitmq.rabbitmqPort | quote }}
+         - name: PROCESSDATAEXCHANGENAME
+           value: {{ .Values.rabbitmq.exchangeName }}
+         - name: PROCESSDATAEXCHANGETYPE
+           value: {{ .Values.rabbitmq.exchangeType }}
+         - name: PROCESSDATAROUTINGKEY
+           value: {{ .Values.rabbitmq.routingKey }}
+         - name: PROCESSDATAQUEUENAME
+           value: {{ .Values.rabbitmq.queueName }}
+         - name: PROCESSDATACLIENTNAME
+           value: {{ .Values.rabbitmq.clientName }}
+         - name: RABBITMQUSERNAME
+           valueFrom:
+            secretKeyRef:
+              name: {{ .Values.app.name }}-{{ .Values.app.function }}-secret
+              key: RABBITMQUSERNAME
+         - name: RABBITMQPASSWORD
+           valueFrom:
+            secretKeyRef:
+              name: {{ .Values.app.name }}-{{ .Values.app.function }}-secret
+              key: RABBITMQPASSWORD
+         - name: OPCUSERNAME
+           valueFrom:
+            secretKeyRef:
+              name: {{ .Values.app.name }}-{{ .Values.app.function }}-secret
+              key: OPCUSERNAME
+         - name: OPCPASSWORD
+           valueFrom:
+            secretKeyRef:
+              name: {{ .Values.app.name }}-{{ .Values.app.function }}-secret
+              key: OPCPASSWORD
+# Pod resoruces
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "100m"
+          limits:
+            memory: "1000Mi"
+            cpu: "800m"
+#Ports
+        ports:
+          - name: opc-read-port
+            containerPort: 8090
+            protocol: TCP
+# volumeMounts
+        volumeMounts:
+          - name: config-volume
+            mountPath: /node_config
+# volumes
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Values.app.name }}-{{ .Values.app.function }}-cm
+      imagePullSecrets:
+      - name: git-hub-cred03
+status: {}
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   namespace: opc-client-read
+#   creationTimestamp: null
+#   labels:
+#     app: opc-client-read
+#   name: opc-client-read
+# spec:
+#   ports:
+#   - name: 8090-8090
+#     port: 8090
+#     protocol: TCP
+#     targetPort: 8090
+#   selector:
+#     app: opc-client-read # selector of the pod
+#   type: ClusterIP
+# status:
+#   loadBalancer: {}
