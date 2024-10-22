@@ -24,7 +24,6 @@ spec:
       annotations:
         checksum/opc-nodes: {{ include (print $.Template.BasePath "/opc-nodes-cm.yaml") . | sha256sum }}
         checksum/secrets: {{ include (print $.Template.BasePath "/opc-secret.yaml") . | sha256sum }}
-        # checksum/values: {{ .Values.configmap | sha256sum }}
     spec:
       containers:
       - name: {{ .Values.app.name }}-{{ .Values.app.function }}
