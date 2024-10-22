@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       chart: ./charts/opc-client # bo folder charts/opc-client
-      version: '0.1.0'
+      version: '0.1.1'
       sourceRef:
         # kind: HelmRepository
         kind: GitRepository
