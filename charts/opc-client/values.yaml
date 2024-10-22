@@ -4,7 +4,7 @@ deployment:
   pullPolicy: IfNotPresent
   updateStrategy: RollingUpdate
 app:
-  name: "opc-processdata-marcin02" # "opc-processdata"
+  name: "opc-processdata-marcin03" # "opc-processdata"
   function: "read"
 namespace: "opc-client"
 opc:
