@@ -7,7 +7,7 @@ spec:
   interval: 30s
   chart:
     spec:
-      chart: opcua-client
+      chart: opc-client # bo folder charts/opc-client
       version: '0.1.0'
       sourceRef:
         # kind: HelmRepository
