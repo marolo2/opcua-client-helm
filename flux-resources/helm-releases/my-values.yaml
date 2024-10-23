@@ -4,7 +4,7 @@ deployment:
   pullPolicy: IfNotPresent
   updateStrategy: RollingUpdate
 app:
-  name: "opc-processdata-marcin03" # "opc-processdata"
+  name: "opc-processdata-marcin04" # "opc-processdata"
   function: "read"
 namespace: "opc-client"
 opc:
@@ -13,7 +13,7 @@ opc:
   opcSubperiod: 100 # in miliseconds
 rabbitmq:
   rabbitmqHost: "rabbitmq-0.rabbitmq.rabbitmq-instance.svc.cluster.local"
-  rabbitmqPort: "5674"
+  rabbitmqPort: "5672"
   exchangeName: "PubProcessDataOPC_Exchange"
   exchangeType: "direct"
   routingKey: "PubProcessDataOPC_Key"
