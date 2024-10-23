@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: flux-system
 resources:
   - helmrelease-opcclient.yaml
+  - deployment.yaml
 
 configMapGenerator:
   - name: podinfo-values
