@@ -4,6 +4,7 @@ namespace: flux-system
 resources:
   - helmrelease-opcclient.yaml
   - deployment.yaml
+  - values.yaml
 
 configMapGenerator:
   - name: podinfo-values
