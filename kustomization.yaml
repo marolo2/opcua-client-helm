@@ -6,4 +6,4 @@ kind: Kustomization
 resources:
   - ./flux-resources/helm-repositories/
   - ./flux-resources/helm-releases/
-  - ./flux-resources/kustomizations/
+  # - ./flux-resources/kustomizations/
