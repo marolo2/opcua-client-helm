@@ -13,7 +13,7 @@ opc:
   opcSubperiod: 100 # in miliseconds
 rabbitmq:
   rabbitmqHost: "rabbitmq-0.rabbitmq.rabbitmq-instance.svc.cluster.local"
-  rabbitmqPort: "5672"
+  rabbitmqPort: "5673"
   exchangeName: "PubProcessDataOPC_Exchange"
   exchangeType: "direct"
   routingKey: "PubProcessDataOPC_Key"
